@@ -4,14 +4,9 @@ channels:
 dependencies:
   - pandas
   - python=3.9
-  - seaborn
   - numpy==1.22.3
-  - matplotlib
-  - jupyterlab
   - scipy
   - numpy-base
   - scikit-learn
-  - streamlit
   - libgcc
-  - matplotlib-base
 prefix: /Users/jayshah/opt/anaconda3/envs/data_visualization
