@@ -1,0 +1,15 @@
+name: data_visualization
+channels:
+  - defaults
+dependencies:
+  - pandas
+  - python=3.9
+  - seaborn
+  - numpy
+  - matplotlib
+  - jupyterlab
+  - scipy
+  - numpy-base
+  - scikit-learn
+  - streamlit
+prefix: /Users/jayshah/opt/anaconda3/envs/data_visualization
