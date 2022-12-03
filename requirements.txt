@@ -6,4 +6,3 @@ dependencies:
   - numpy
   - pandas
   - streamlit
-prefix: /Users/jayshah/opt/anaconda3/envs/data_viz
