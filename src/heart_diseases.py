@@ -14,6 +14,7 @@ def main():
         layout="wide",
         initial_sidebar_state="auto"
     )
+    st.title("Heart Diseases")
 
     @st.cache(persist=True)
     def load_data():
