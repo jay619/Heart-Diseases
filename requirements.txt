@@ -1,0 +1,9 @@
+name: data_viz
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - numpy
+  - pandas
+  - streamlit
+prefix: /Users/jayshah/opt/anaconda3/envs/data_viz
