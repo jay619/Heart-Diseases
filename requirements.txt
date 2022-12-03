@@ -7,3 +7,6 @@ dependencies:
   - pandas
   - streamlit
   - kernel-headers_linux-64
+  - scikit-learn
+  - scipy
+prefix: /Users/jayshah/opt/anaconda3/envs/data_viz
