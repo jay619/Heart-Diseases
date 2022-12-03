@@ -13,4 +13,5 @@ dependencies:
   - scikit-learn
   - streamlit
   - libgcc
+  - matplotlib-base
 prefix: /Users/jayshah/opt/anaconda3/envs/data_visualization
