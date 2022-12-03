@@ -6,3 +6,4 @@ dependencies:
   - numpy
   - pandas
   - streamlit
+  - kernel-headers_linux-64
