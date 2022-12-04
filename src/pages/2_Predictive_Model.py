@@ -80,8 +80,8 @@ def main():
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("##### Model Accuracy: `{:.2%}`\tModel Precision: `{:.2%}`".format(accuracy_score(y_true=y_test, y_pred=y_pred), precision_score(y_true=y_test, y_pred=y_pred, pos_label=1)))
-        # st.markdown("##### Model Recall: `{:.2%}`\tModel F1-Score: `{:.2%}`".format(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes"), f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
+        st.markdown("##### Model Accuracy: `{:.2%}`\tModel Precision: `{:.2%}`".format(accuracy_score(y_true=y_test, y_pred=y_pred), precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
+        st.markdown("##### Model Recall: `{:.2%}`\tModel F1-Score: `{:.2%}`".format(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes"), f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
 
     with col2:
         fig, ax = plt.subplots(figsize=(3,3))
