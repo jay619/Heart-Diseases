@@ -52,21 +52,40 @@ def main():
     # Concatenated
     X_train_encoded = pd.concat([ordinal_enc_df, scaled_df, one_hot_encoded_df], axis=1)
 
+    ## Model Training & Validation
     # clf = LogisticRegression(max_iter=500, class_weight='balanced')
     # clf.fit(X_train_encoded, y_train)
-
-    ## Model Training Validation
 
 
     # Model Prediction
 
-    st.sidebar.subheader("Patient Details")
+    st.subheader("Patient Details")
     # is_predict = st.sidebar.button(label="Predict")
 
-    with st.sidebar.form(key="patient_details", clear_on_submit=False):
-        user_bmi = st.number_input(label="Body Mass Index (BMI)", format="%f", min_value=0.0, step=0.1)
+    with st.form(key="patient_details", clear_on_submit=False):
+        c1, c2 = st.columns(2)
+        with c1:
+            user_bmi = st.number_input(label="Body Mass Index (BMI)", format="%f", min_value=0.0, step=0.1)
+            user_smoking = st.selectbox(label="Have you smoked at least 100 cigarettes in your entire life?", options=["-", "Yes", "No"])
+            user_alochol = st.selectbox(label="Do you drink alochol?", help="Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week", options=["-", "Yes", "No"])
+            user_stroke = st.selectbox(label="Have you ever had a stroke?", options=["-", "Yes", "No"])
+            user_physical_health = st.number_input(label="For how many days during the past 30 days was your physical health not good?", help="Now thinking about your physical health, which includes physical illness and injury, for how many days during the past 30 days was your physical health not good?", format="%d", min_value=0, max_value=30, step=1)
+            user_mental_health = st.number_input(label="Thinking about your mental health, for how many days during the past 30 days was your mental health not good?", min_value=0, max_value=30, format="%d", step=1)
+            user_sleep = st.number_input(label="On average, how many hours of sleep do you get in a 24-hour period?", format="%d", min_value=0, max_value=24, step=1)
+            user_kidney_disease = st.selectbox(label="Any Kidney diseases?", help="Not including kidney stones, bladder infection or incontinence, were you ever told you had kidney disease?", options=["-", "Yes", "No"])
+            user_skin_cancer = st.selectbox(label="Do you have or had skin cancer?", options=["-", "Yes", "No"])
+            
+        with c2:
+            user_diff_walking = st.selectbox(label="Do you have serious difficulty walking or climbing stairs?", options=["-", "Yes", "No"])
+            user_sex = st.selectbox(label="Sex", options=["-", "Male", "Female"])
+            user_age_cat = st.selectbox(label="Age Category", options=["-", "18-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80 or older"])
+            user_race = st.selectbox(label="Race", options=["-","American Indian/Alaskan Native","Asian","Black","Hispanic","Other","White"])
+            user_diabetic = st.selectbox(label="Do you have or had diabetes?", options=["-", "Yes", "No"])
+            user_phy_activity = st.selectbox(label="Have you had any physical activity in the past 30 days?", options=["-", "Yes", "No"], help="Adults who reported doing physical activity or exercise during the past 30 days other than their regular job")
+            user_gen_health = st.selectbox(label="How is your general health?", options=["-", "Excellent", "Fair", "Good", "Poor", "Very good"])
+            user_asthama = st.selectbox(label="Do you have or had asthama?", options=["-", "Yes", "No"])
 
-        st.form_submit_button(label="Predict", type="primary")
+        is_predict = st.form_submit_button(label="Predict", type="primary")
     
 
 if __name__ == '__main__':
