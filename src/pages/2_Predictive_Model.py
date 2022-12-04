@@ -66,7 +66,7 @@ def main():
     with st.sidebar.form(key="patient_details", clear_on_submit=False):
         user_bmi = st.number_input(label="Body Mass Index (BMI)", format="%f", min_value=0.0, step=0.1)
 
-        st.form_submit_button(label="Predict", type="primary")
+        st.form_submit_button(label="Predict")
     
 
 if __name__ == '__main__':
