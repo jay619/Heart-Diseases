@@ -7,7 +7,6 @@ import seaborn as sns
 import streamlit as st
 import streamlit.components.v1 as components
 
-FILE_PATH_DATA = 'input/heart_2020_cleaned.csv'
 
 def main():
     st.set_page_config(
@@ -24,14 +23,7 @@ def main():
     - To look at the dashboard, select the **Dashboard** page on the left
     - To view/use the predictive model, select the **Predictive Model** page on the left
     """)
-
-    @st.cache(persist=True)
-    def load_data():
-        data = pd.read_csv(FILE_PATH_DATA)
-        return data
     
-
-    df = load_data()
 
 if __name__ == '__main__':
     main()
