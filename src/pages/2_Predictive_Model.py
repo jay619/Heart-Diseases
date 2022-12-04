@@ -4,7 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, ConfusionMatrixDisplay
+from sklearn.model_selection import KFold, cross_val_score
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -64,6 +65,12 @@ def main():
     clf = LogisticRegression(max_iter=500, class_weight='balanced')
     clf.fit(X_train_encoded, y_train)
 
+    folds = KFold(n_splits=10)
+    kfold = folds.split(X=X_train, y=y_train)
+    scores = cross_val_score(clf, X_train_encoded, y_train, scoring="accuracy", cv=kfold)
+    # st.line_chart(scores)
+    # st.write(scores)
+
     ### Transform Test Data
     test_scaled = minmax.transform(X_test[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']])
     test_scaled_df = pd.DataFrame(test_scaled, columns=['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime'])
@@ -78,10 +85,18 @@ def main():
 
     y_pred = clf.predict(X_test_encoded)
 
+    # st.markdown("##### Model Accuracy: `{:.2%}`\tModel Precision: `{:.2%}`".format(accuracy_score(y_true=y_test, y_pred=y_pred), precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
+    # st.markdown("##### Model Recall: `{:.2%}`\tModel F1-Score: `{:.2%}`".format(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes"), f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
+
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("##### Model Accuracy: `{:.2%}`\tModel Precision: `{:.2%}`".format(accuracy_score(y_true=y_test, y_pred=y_pred), precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
-        st.markdown("##### Model Recall: `{:.2%}`\tModel F1-Score: `{:.2%}`".format(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes"), f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
+        st.metric(label="Accuracy (%)", value=round(accuracy_score(y_true=y_test, y_pred=y_pred)*100, 2))
+        st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+    
+        st.metric(label="Recall (%)", value=round(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+        st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+            
+        st.dataframe(pd.DataFrame(scores, columns=["Accuracy"]).T, use_container_width=False)
 
     with col2:
         fig, ax = plt.subplots(figsize=(3,3))
@@ -93,6 +108,7 @@ def main():
     # Model Prediction
     st.subheader("Patient Details")
 
+    pred_label = "Please enter your details above and click **Predict**"
     with st.form(key="patient_details", clear_on_submit=False):
         c1, c2 = st.columns(2)
         with c1:
@@ -127,12 +143,15 @@ def main():
             user_inp_pred = clf.predict(user_input)[0]
     
     
-    if user_inp_pred == "Yes":
-        st.markdown("### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` 🚨".format(user_inp_pred))
-    else:
-        st.markdown("### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` ✅".format(user_inp_pred))
-            # label_encoder.inverse_transform(user_inp_pred)[0]
+            if user_inp_pred == "Yes":
+                # st.markdown("### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` 🚨".format(user_inp_pred))
+                pred_label = "### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` 🚨".format(user_inp_pred)
+            else:
+                # st.markdown("### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` ✅".format(user_inp_pred))
+                    # label_encoder.inverse_transform(user_inp_pred)[0]
+                pred_label = "### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` ✅".format(user_inp_pred)
 
+    st.markdown(pred_label)
     
 
 if __name__ == '__main__':
