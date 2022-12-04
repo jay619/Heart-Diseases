@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, ConfusionMatrixDisplay
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -85,9 +85,9 @@ def main():
 
     with col2:
         fig, ax = plt.subplots(figsize=(3,3))
-        cm = confusion_matrix(y_true=y_test, y_pred=y_pred)
-        sns.heatmap(cm, annot=True, fmt="g", ax=ax)
-        st.pyplot(fig=fig)
+        ax.set_title("Confusion Matrix")
+        disp = ConfusionMatrixDisplay.from_predictions(y_true=y_test, y_pred=y_pred, include_values=True, ax=ax, normalize='true')
+        st.pyplot(fig)
 
 
     # Model Prediction
