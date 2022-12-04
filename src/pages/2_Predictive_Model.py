@@ -27,7 +27,9 @@ def main():
     features = df.loc[:, df.columns != 'heartdisease']
 
     X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, train_size=0.8, random_state=7, stratify=df['heartdisease'])
-    st.write("Train size: {}, Test size: {}".format(len(X_train.index), len(X_test.index)))
+    st.write("##### Train size: ", len(X_train.index), " Test size: ", len(X_test.index))
+
+    ## Model Training
 
     # Applying MinMax scaler to integer features
     minmax = MinMaxScaler()
@@ -50,10 +52,21 @@ def main():
     # Concatenated
     X_train_encoded = pd.concat([ordinal_enc_df, scaled_df, one_hot_encoded_df], axis=1)
 
-    clf = LogisticRegression(max_iter=500, class_weight='balanced')
-    clf.fit(X_train_encoded, y_train)
+    # clf = LogisticRegression(max_iter=500, class_weight='balanced')
+    # clf.fit(X_train_encoded, y_train)
+
+    ## Model Training Validation
+
+
+    # Model Prediction
 
     st.sidebar.subheader("Patient Details")
+    # is_predict = st.sidebar.button(label="Predict")
+
+    with st.sidebar.form(key="patient_details", clear_on_submit=False):
+        user_bmi = st.number_input(label="Body Mass Index (BMI)", format="%f", min_value=0.0, step=0.1)
+
+        st.form_submit_button(label="Predict")
 
     
 
