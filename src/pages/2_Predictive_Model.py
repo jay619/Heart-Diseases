@@ -67,7 +67,6 @@ def main():
         user_bmi = st.number_input(label="Body Mass Index (BMI)", format="%f", min_value=0.0, step=0.1)
 
         st.form_submit_button(label="Predict", type="primary")
-
     
 
 if __name__ == '__main__':
