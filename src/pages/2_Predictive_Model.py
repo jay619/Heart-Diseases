@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
+import numpy as np
 
 FILE_PATH_DATA = 'input/heart_2020_cleaned.csv'
 
@@ -53,9 +54,8 @@ def main():
     X_train_encoded = pd.concat([ordinal_enc_df, scaled_df, one_hot_encoded_df], axis=1)
 
     ## Model Training & Validation
-    # clf = LogisticRegression(max_iter=500, class_weight='balanced')
-    # clf.fit(X_train_encoded, y_train)
-
+    clf = LogisticRegression(max_iter=500, class_weight='balanced')
+    clf.fit(X_train_encoded, y_train)
 
     # Model Prediction
 
@@ -86,6 +86,17 @@ def main():
             user_asthama = st.selectbox(label="Do you have or had asthama?", options=["-", "Yes", "No"])
 
         is_predict = st.form_submit_button(label="Predict", type="primary")
+        # Make the prediction based on user inputs
+        if is_predict:
+            user_inp_scaled = minmax.transform([[user_bmi, user_physical_health, user_mental_health, user_sleep]])
+            user_inp_ordinal = ordinal_enc.transform([[user_smoking, user_alochol, user_stroke, user_diff_walking, user_phy_activity, user_asthama, user_kidney_disease, user_skin_cancer]])
+            user_inp_one_hot = one_hot.transform([[user_sex, user_age_cat, user_race, user_diabetic, user_gen_health]]).toarray()
+
+            user_input = np.concatenate([user_inp_scaled, user_inp_ordinal, user_inp_one_hot], axis=1)
+            st.write(clf.predict(user_input))
+            # st.write(user_inp_ordinal)
+            # st.write(user_inp_one_hot)
+
     
 
 if __name__ == '__main__':
