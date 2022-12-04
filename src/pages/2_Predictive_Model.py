@@ -16,6 +16,17 @@ FILE_PATH_DATA = 'input/heart_2020_cleaned.csv'
 def main():
     st.markdown("# Logistic Regression")
 
+    st.markdown('''
+    The dataset was used to build a Logistic Regression Classifier model. This model can be used to make predicitions and potentially build a early detection system that can detect if an individual has higher chances of heart diseases based on their health and other medical history. Below you can find metrics about the model performance:
+    - Train size: Total training instances used to train the model
+    - Test size: Total test instances used to evaluate model performance
+    - Accuracy: How accurately the model predicts the test instances
+    - Precision: How precisely the model predicts the positive class (Yes)
+    - Recall: This is the ratio between the numbers of positive samples correctly classified as positive to the total number of positive samples
+    - F1-score: The F1 score is defined as the harmonic mean of precision and recall
+    - Cross Validation score: 5 folds were created to test model performance
+    ''')
+
     @st.cache(persist=True, allow_output_mutation=True)
     def load_data():
         data = pd.read_csv(FILE_PATH_DATA)
@@ -36,7 +47,7 @@ def main():
     features = df.loc[:, df.columns != 'heartdisease']
 
     X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, train_size=0.8, random_state=7, stratify=df['heartdisease'])
-    st.write("##### Train size: ", len(X_train.index), " Test size: ", len(X_test.index))
+    # st.write("##### Train size: ", len(X_train.index), " Test size: ", len(X_test.index))
 
     ## Model Training
 
@@ -65,7 +76,7 @@ def main():
     clf = LogisticRegression(max_iter=500, class_weight='balanced')
     clf.fit(X_train_encoded, y_train)
 
-    folds = KFold(n_splits=10)
+    folds = KFold(n_splits=5)
     kfold = folds.split(X=X_train, y=y_train)
     scores = cross_val_score(clf, X_train_encoded, y_train, scoring="accuracy", cv=kfold)
     # st.line_chart(scores)
@@ -88,17 +99,20 @@ def main():
     # st.markdown("##### Model Accuracy: `{:.2%}`\tModel Precision: `{:.2%}`".format(accuracy_score(y_true=y_test, y_pred=y_pred), precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
     # st.markdown("##### Model Recall: `{:.2%}`\tModel F1-Score: `{:.2%}`".format(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes"), f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns([1,1,2])
     with col1:
+        st.metric(label="Train Size", value=len(X_train.index))
+        st.metric(label="Test Size", value=len(X_test.index))
         st.metric(label="Accuracy (%)", value=round(accuracy_score(y_true=y_test, y_pred=y_pred)*100, 2))
         st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-    
         st.metric(label="Recall (%)", value=round(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-        st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-            
-        st.dataframe(pd.DataFrame(scores, columns=["Accuracy"]).T, use_container_width=False)
-
     with col2:
+        st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+        for sc in range(len(scores)):
+            st.metric(label="Fold-{} Accuracy (%)".format(sc+1), value=round(scores[sc]*100, 2))
+        # st.dataframe(pd.DataFrame(scores, columns=["Accuracy"]).T, use_container_width=False)
+
+    with col3:
         fig, ax = plt.subplots(figsize=(3,3))
         ax.set_title("Confusion Matrix")
         disp = ConfusionMatrixDisplay.from_predictions(y_true=y_test, y_pred=y_pred, include_values=True, ax=ax, normalize='true')
