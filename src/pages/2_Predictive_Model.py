@@ -158,12 +158,9 @@ def main():
     
     
             if user_inp_pred == "Yes":
-                # st.markdown("### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` 🚨".format(user_inp_pred))
-                pred_label = "### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` 🚨".format(user_inp_pred)
+                pred_label = "###🚨Based on the inputs you've provided, we think you're at a high risk of heart diseases.🚨 \\ For more resources on how to manage a healthy lifestyle and a healthy heart, please look at these <a href='https://www.heart.org/en/healthy-living/healthy-lifestyle/lifes-essential-8'>Life's Essential 8</a>'"
             else:
-                # st.markdown("### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` ✅".format(user_inp_pred))
-                    # label_encoder.inverse_transform(user_inp_pred)[0]
-                pred_label = "### Does user have a high chance of heart diseases? Based on the inputs, we think: `{}` ✅".format(user_inp_pred)
+                pred_label = "###✅Based on the inputs you've provided, we think you're not at a high risk of heart diseases.✅"
 
     st.markdown(pred_label)
     
