@@ -32,91 +32,92 @@ def main():
         data = pd.read_csv(FILE_PATH_DATA)
         return data
 
-    df = load_data()
-    df.columns = df.columns.str.lower()
+    with st.spinner(text="Model Training in progress ..."):
 
-    # Encoding target variable
-    # df['heartdisease'].replace({'Yes':1,'No':0},inplace=True)
+        df = load_data()
+        df.columns = df.columns.str.lower()
 
-    label_encoder = LabelEncoder()
-    label_encoder.fit_transform(df['heartdisease'])
+        # Encoding target variable
+        # df['heartdisease'].replace({'Yes':1,'No':0},inplace=True)
+
+        label_encoder = LabelEncoder()
+        label_encoder.fit_transform(df['heartdisease'])
 
 
-    # Spliting target and feature variables
-    target = df['heartdisease']
-    features = df.loc[:, df.columns != 'heartdisease']
+        # Spliting target and feature variables
+        target = df['heartdisease']
+        features = df.loc[:, df.columns != 'heartdisease']
 
-    X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, train_size=0.8, random_state=7, stratify=df['heartdisease'])
-    # st.write("##### Train size: ", len(X_train.index), " Test size: ", len(X_test.index))
+        X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, train_size=0.8, random_state=7, stratify=df['heartdisease'])
+        # st.write("##### Train size: ", len(X_train.index), " Test size: ", len(X_test.index))
 
-    ## Model Training
+        ## Model Training
 
-    # Applying MinMax scaler to integer features
-    minmax = MinMaxScaler()
-    minmax.fit(X_train[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']], )
-    scaled = minmax.transform(X_train[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']])
-    scaled_df = pd.DataFrame(scaled, columns=['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime'])
+        # Applying MinMax scaler to integer features
+        minmax = MinMaxScaler()
+        minmax.fit(X_train[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']], )
+        scaled = minmax.transform(X_train[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']])
+        scaled_df = pd.DataFrame(scaled, columns=['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime'])
 
-    # Applying Ordinal Encoding to Yes/No features
-    ordinal_enc = OrdinalEncoder(dtype=int)
-    ordinal_enc.fit(X_train[['smoking', 'alcoholdrinking', 'stroke', 'diffwalking', 'physicalactivity', 'asthma', 'kidneydisease', 'skincancer']])
-    encoded = ordinal_enc.transform(X_train[['smoking', 'alcoholdrinking', 'stroke', 'diffwalking', 'physicalactivity', 'asthma', 'kidneydisease', 'skincancer']])
-    ordinal_enc_df = pd.DataFrame(encoded, columns=ordinal_enc.feature_names_in_)
+        # Applying Ordinal Encoding to Yes/No features
+        ordinal_enc = OrdinalEncoder(dtype=int)
+        ordinal_enc.fit(X_train[['smoking', 'alcoholdrinking', 'stroke', 'diffwalking', 'physicalactivity', 'asthma', 'kidneydisease', 'skincancer']])
+        encoded = ordinal_enc.transform(X_train[['smoking', 'alcoholdrinking', 'stroke', 'diffwalking', 'physicalactivity', 'asthma', 'kidneydisease', 'skincancer']])
+        ordinal_enc_df = pd.DataFrame(encoded, columns=ordinal_enc.feature_names_in_)
 
-    # One-Hot encoding
-    one_hot = OneHotEncoder(categories='auto', drop=None, handle_unknown='ignore', dtype=int)
-    one_hot.fit(X_train[['sex', 'agecategory', 'race', 'diabetic', 'genhealth']])
-    one_hot_encoded = one_hot.transform(X_train[['sex', 'agecategory', 'race', 'diabetic', 'genhealth']]).toarray()
-    one_hot_encoded_df = pd.DataFrame(one_hot_encoded, columns=one_hot.get_feature_names_out())
+        # One-Hot encoding
+        one_hot = OneHotEncoder(categories='auto', drop=None, handle_unknown='ignore', dtype=int)
+        one_hot.fit(X_train[['sex', 'agecategory', 'race', 'diabetic', 'genhealth']])
+        one_hot_encoded = one_hot.transform(X_train[['sex', 'agecategory', 'race', 'diabetic', 'genhealth']]).toarray()
+        one_hot_encoded_df = pd.DataFrame(one_hot_encoded, columns=one_hot.get_feature_names_out())
 
-    # Concatenated
-    X_train_encoded = pd.concat([ordinal_enc_df, scaled_df, one_hot_encoded_df], axis=1)
+        # Concatenated
+        X_train_encoded = pd.concat([ordinal_enc_df, scaled_df, one_hot_encoded_df], axis=1)
 
-    ## Model Training & Validation
-    clf = LogisticRegression(max_iter=500, class_weight='balanced')
-    clf.fit(X_train_encoded, y_train)
+        ## Model Training & Validation
+        clf = LogisticRegression(max_iter=500, class_weight='balanced')
+        clf.fit(X_train_encoded, y_train)
+        st.success("Model Training completed", icon="✅")
 
-    folds = KFold(n_splits=5)
-    kfold = folds.split(X=X_train, y=y_train)
-    scores = cross_val_score(clf, X_train_encoded, y_train, scoring="accuracy", cv=kfold)
-    # st.line_chart(scores)
-    # st.write(scores)
+    with st.spinner(text="Evaluation Model ...."):
+        folds = KFold(n_splits=5)
+        kfold = folds.split(X=X_train, y=y_train)
+        scores = cross_val_score(clf, X_train_encoded, y_train, scoring="accuracy", cv=kfold)
+        # st.line_chart(scores)
+        # st.write(scores)
 
-    ### Transform Test Data
-    test_scaled = minmax.transform(X_test[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']])
-    test_scaled_df = pd.DataFrame(test_scaled, columns=['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime'])
-    
-    test_encoded = ordinal_enc.transform(X_test[['smoking', 'alcoholdrinking', 'stroke', 'diffwalking', 'physicalactivity', 'asthma', 'kidneydisease', 'skincancer']])
-    test_ordinal_enc_df = pd.DataFrame(test_encoded, columns=ordinal_enc.feature_names_in_)
+        ### Transform Test Data
+        test_scaled = minmax.transform(X_test[['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime']])
+        test_scaled_df = pd.DataFrame(test_scaled, columns=['bmi', 'physicalhealth', 'mentalhealth', 'sleeptime'])
+        
+        test_encoded = ordinal_enc.transform(X_test[['smoking', 'alcoholdrinking', 'stroke', 'diffwalking', 'physicalactivity', 'asthma', 'kidneydisease', 'skincancer']])
+        test_ordinal_enc_df = pd.DataFrame(test_encoded, columns=ordinal_enc.feature_names_in_)
 
-    test_one_hot_encoded = one_hot.transform(X_test[['sex', 'agecategory', 'race', 'diabetic', 'genhealth']]).toarray()
-    test_one_hot_encoded_df = pd.DataFrame(test_one_hot_encoded, columns=one_hot.get_feature_names_out())
+        test_one_hot_encoded = one_hot.transform(X_test[['sex', 'agecategory', 'race', 'diabetic', 'genhealth']]).toarray()
+        test_one_hot_encoded_df = pd.DataFrame(test_one_hot_encoded, columns=one_hot.get_feature_names_out())
 
-    X_test_encoded = pd.concat([test_ordinal_enc_df, test_scaled_df, test_one_hot_encoded_df], axis=1)
+        X_test_encoded = pd.concat([test_ordinal_enc_df, test_scaled_df, test_one_hot_encoded_df], axis=1)
 
-    y_pred = clf.predict(X_test_encoded)
+        y_pred = clf.predict(X_test_encoded)
 
-    # st.markdown("##### Model Accuracy: `{:.2%}`\tModel Precision: `{:.2%}`".format(accuracy_score(y_true=y_test, y_pred=y_pred), precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
-    # st.markdown("##### Model Recall: `{:.2%}`\tModel F1-Score: `{:.2%}`".format(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes"), f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")))
+        col1, col2, col3 = st.columns([1,1,2])
+        with col1:
+            st.metric(label="Train Size", value=len(X_train.index))
+            st.metric(label="Test Size", value=len(X_test.index))
+            st.metric(label="Accuracy (%)", value=round(accuracy_score(y_true=y_test, y_pred=y_pred)*100, 2))
+            st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+            st.metric(label="Recall (%)", value=round(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+        with col2:
+            st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+            for sc in range(len(scores)):
+                st.metric(label="Fold-{} Accuracy (%)".format(sc+1), value=round(scores[sc]*100, 2))
+            # st.dataframe(pd.DataFrame(scores, columns=["Accuracy"]).T, use_container_width=False)
 
-    col1, col2, col3 = st.columns([1,1,2])
-    with col1:
-        st.metric(label="Train Size", value=len(X_train.index))
-        st.metric(label="Test Size", value=len(X_test.index))
-        st.metric(label="Accuracy (%)", value=round(accuracy_score(y_true=y_test, y_pred=y_pred)*100, 2))
-        st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-        st.metric(label="Recall (%)", value=round(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-    with col2:
-        st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-        for sc in range(len(scores)):
-            st.metric(label="Fold-{} Accuracy (%)".format(sc+1), value=round(scores[sc]*100, 2))
-        # st.dataframe(pd.DataFrame(scores, columns=["Accuracy"]).T, use_container_width=False)
-
-    with col3:
-        fig, ax = plt.subplots(figsize=(3,3))
-        ax.set_title("Confusion Matrix")
-        disp = ConfusionMatrixDisplay.from_predictions(y_true=y_test, y_pred=y_pred, include_values=True, ax=ax, normalize='true')
-        st.pyplot(fig)
+        with col3:
+            fig, ax = plt.subplots(figsize=(3,3))
+            ax.set_title("Confusion Matrix")
+            disp = ConfusionMatrixDisplay.from_predictions(y_true=y_test, y_pred=y_pred, include_values=True, ax=ax, normalize='true')
+            st.pyplot(fig)
 
 
     # Model Prediction
@@ -158,11 +159,13 @@ def main():
     
     
             if user_inp_pred == "Yes":
-                pred_label = "###🚨Based on the inputs you've provided, we think you're at a high risk of heart diseases.🚨 \\ For more resources on how to manage a healthy lifestyle and a healthy heart, please look at these <a href='https://www.heart.org/en/healthy-living/healthy-lifestyle/lifes-essential-8'>Life's Essential 8</a>'"
+                pred_label = """
+                ### 🚨Based on the inputs you've provided, we think you're at a high risk of heart diseases.🚨
+                *For more resources on how to manage a healthy lifestyle and a healthy heart, please look at these <a href='https://www.heart.org/en/healthy-living/healthy-lifestyle/lifes-essential-8'>Life's Essential 8</a>*"""
             else:
-                pred_label = "###✅Based on the inputs you've provided, we think you're not at a high risk of heart diseases.✅"
+                pred_label = "### ✅Based on the inputs you've provided, we think you're not at a high risk of heart diseases.✅"
 
-    st.markdown(pred_label)
+    st.markdown(pred_label, unsafe_allow_html=True)
     
 
 if __name__ == '__main__':
