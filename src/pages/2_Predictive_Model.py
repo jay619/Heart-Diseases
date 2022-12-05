@@ -79,7 +79,7 @@ def main():
         clf.fit(X_train_encoded, y_train)
         st.success("Model Training completed", icon="✅")
 
-    with st.spinner(text="Evaluation Model ...."):
+    with st.spinner(text="Evaluating Model ...."):
         folds = KFold(n_splits=5)
         kfold = folds.split(X=X_train, y=y_train)
         scores = cross_val_score(clf, X_train_encoded, y_train, scoring="accuracy", cv=kfold)
