@@ -107,10 +107,11 @@ def main():
             st.metric(label="Accuracy (%)", value=round(accuracy_score(y_true=y_test, y_pred=y_pred)*100, 2))
             st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
             st.metric(label="Recall (%)", value=round(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
-        with col2:
             st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
+        with col2:
             for sc in range(len(scores)):
                 st.metric(label="Fold-{} Accuracy (%)".format(sc+1), value=round(scores[sc]*100, 2))
+            st.metric(label="Avg. KFold Accuracy (%)", value=round(np.mean(scores)*100, 2))
             # st.dataframe(pd.DataFrame(scores, columns=["Accuracy"]).T, use_container_width=False)
 
         with col3:
