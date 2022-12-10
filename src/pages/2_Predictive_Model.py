@@ -117,7 +117,7 @@ def main():
         with col3:
             fig, ax = plt.subplots(figsize=(3,3))
             ax.set_title("Confusion Matrix")
-            disp = ConfusionMatrixDisplay.from_predictions(y_true=y_test, y_pred=y_pred, include_values=True, ax=ax, normalize='true')
+            disp = ConfusionMatrixDisplay.from_predictions(y_true=y_test, y_pred=y_pred, include_values=True, ax=ax)
             st.pyplot(fig)
 
 
