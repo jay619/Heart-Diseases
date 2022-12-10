@@ -105,7 +105,7 @@ def main():
             st.metric(label="Train Size", value=len(X_train.index))
             st.metric(label="Test Size", value=len(X_test.index))
             st.metric(label="Accuracy (%)", value=round(accuracy_score(y_true=y_test, y_pred=y_pred)*100, 2))
-            st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="No")*100, 2))
+            st.metric(label="Precission (%)", value=round(precision_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
             st.metric(label="Recall (%)", value=round(recall_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
             st.metric(label="F1-Score (%)", value=round(f1_score(y_true=y_test, y_pred=y_pred, pos_label="Yes")*100, 2))
         with col2:
