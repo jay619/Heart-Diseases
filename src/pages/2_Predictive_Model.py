@@ -21,7 +21,7 @@ def main():
     - Train size: Total training instances used to train the model
     - Test size: Total test instances used to evaluate model performance
     - Accuracy: How accurately the model predicts the test instances
-    - Precision: How precisely the model predicts the positive class (Yes)
+    - Precision: Can be calculated as `TP/(TP+FP)`
     - Recall: This is the ratio between the numbers of positive samples correctly classified as positive to the total number of positive samples
     - F1-score: The F1 score is defined as the harmonic mean of precision and recall
     - Cross Validation score: 5 folds were created to test model performance
